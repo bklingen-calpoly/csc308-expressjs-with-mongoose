@@ -7,13 +7,13 @@ const UserSchema = require("./models/user");
 const mockingoose = require("mockingoose");
 
 /**
- * This is an example of API Testing. 
+ * This is an example of API Testing.
  * This example demonstrates three strategies for testing API endpoints:
  * 1) Mocking up the db calls
  * 2) Connecting to an actual database based on the URL in a env variable.
  * 3) Connecting to an in-memory database
- * 
- * Libraries used besides jest: 
+ *
+ * Libraries used besides jest:
  *  Mockingoose: for mocking the database calls (if using this strategy)
  *  Supertest: for making calls to your API endpoints.
  *  MongoMemoryServer: for the in-memory db (if using this strategy)
@@ -27,7 +27,7 @@ let inMemoryConn;
 async function connectToClouDbHelper() {
   try {
     appModule.setDatabaseConn(await database.connect());
-  }catch(error) {
+  } catch (error) {
     console.log(error);
   }
 }
@@ -52,13 +52,13 @@ beforeAll(async () => {
    * 1)
    *  Use the following set up when mocking db calls.
    *  Setting an empty db connection.
-  */
-   appModule.setDatabaseConn(mongoose.connection);
-   userModel = mongoose.model("User", UserSchema);
+   */
+  appModule.setDatabaseConn(mongoose.connection);
+  userModel = mongoose.model("User", UserSchema);
 
   /**
-   * 2) 
-   *  Use the following set up when utilizing the 
+   * 2)
+   *  Use the following set up when utilizing the
    *  database.js module to connect to an actual DB.
    */
   //  await connectToClouDbHelper();
@@ -75,7 +75,6 @@ beforeAll(async () => {
 afterAll(async () => {
   // If using option (2)
   // await database.disconnect();
-
   //If using option (3)
   // await inMemoryConn.dropDatabase();
   // await inMemoryConn.close();
@@ -85,46 +84,39 @@ afterAll(async () => {
 beforeEach(async () => {
   // If using option (1)
   jest.clearAllMocks();
-  mockingoose.resetAll();  
+  mockingoose.resetAll();
 });
 
-afterEach(async () => {
- 
-});
+afterEach(async () => {});
 
-test("dummy", async () => {
-  const result = await supertest(appModule.app)
-  .get("/")
-  .expect(200);
+test("Check that app is running", async () => {
+  const result = await supertest(appModule.app).get("/").expect(200);
 
   expect(result.body).toBe("Hello World!");
 });
 
 test("Fetching users by name", async () => {
-  
   //If using option (1)
-  userModel.find = jest.fn().mockResolvedValue(
-    [
-      {name: "Ted Lasso", job: "Soccer coach"},
-      {name: "Ted Lasso", job: "Footbal coach"}
-    ]
-  );
-  
+  userModel.find = jest.fn().mockResolvedValue([
+    { name: "Ted Lasso", job: "Soccer coach" },
+    { name: "Ted Lasso", job: "Footbal coach" },
+  ]);
+
   const name = "Ted Lasso";
   const result = await supertest(appModule.app)
-  .get("/users?name="+name)
-  .expect(200);
+    .get("/users?name=" + name)
+    .expect(200);
 
   expect(result.body).toHaveProperty("users_list");
   expect(result.body.users_list.length).toBeGreaterThanOrEqual(0);
-  result.body.users_list.forEach(user => expect(user.name).toBe(name));
+  result.body.users_list.forEach((user) => expect(user.name).toBe(name));
 
   //If using option (1)
   // Mock-related assertions
   //The mocked function (mongoose find) should be called only once
   expect(userModel.find.mock.calls.length).toBe(1);
   // and should be called with no params
-  expect(userModel.find).toHaveBeenCalledWith({name: name});
+  expect(userModel.find).toHaveBeenCalledWith({ name: name });
 });
 
 test("Fetching users by job", async () => {
@@ -136,46 +128,44 @@ test("Fetching users by job", async () => {
     {
       name: "Ted Lasso",
       job: "Soccer coach",
-    }    
+    },
   ];
   userModel.find = jest.fn().mockResolvedValue(result);
 
   const userJob = "Soccer coach";
 
   const response = await supertest(appModule.app)
-  .get("/users?job="+userJob)
-  .expect(200);
+    .get("/users?job=" + userJob)
+    .expect(200);
 
   expect(response.body).toHaveProperty("users_list");
   expect(response.body.users_list.length).toBeGreaterThanOrEqual(0);
-  response.body.users_list.forEach(user => expect(user.job).toBe(userJob));  
+  response.body.users_list.forEach((user) => expect(user.job).toBe(userJob));
 
   expect(userModel.find.mock.calls.length).toBe(1);
-  expect(userModel.find).toHaveBeenCalledWith({job: userJob});
+  expect(userModel.find).toHaveBeenCalledWith({ job: userJob });
 });
 
 test("Fetching by id and finding", async () => {
   const dummyUser = {
     _id: "007",
     name: "Harry Potter",
-    job: "Young wizard"
+    job: "Young wizard",
   };
   userModel.findById = jest.fn().mockResolvedValue(dummyUser);
 
-  const response = await supertest(appModule.app)
-  .get("/users/007")
-  .expect(200);
+  const response = await supertest(appModule.app).get("/users/007").expect(200);
 
-  console.log(response)
+  console.log(response);
   expect(response.body).toHaveProperty("users_list");
-  
+
   const found = response.body.users_list;
   expect(found._id).toBe(dummyUser._id);
   expect(found.name).toBe(dummyUser.name);
   expect(found.job).toBe(dummyUser.job);
 
   expect(userModel.findById.mock.calls.length).toBe(1);
-  expect(userModel.findById).toHaveBeenCalledWith("007");  
+  expect(userModel.findById).toHaveBeenCalledWith("007");
 });
 
 test("Adding user -- failure path with invalid job length", async () => {
@@ -184,13 +174,13 @@ test("Adding user -- failure path with invalid job length", async () => {
     job: "Y",
   };
 
-  mockingoose(userModel).toReturn({}, 'save');
+  mockingoose(userModel).toReturn({}, "save");
 
   const response = await supertest(appModule.app)
     .post("/users")
     .send(toBeAdded)
     .set("Accept", "application/json")
-    .expect(400)  
+    .expect(400);
 
   expect(response.body).toMatchObject({});
 });
@@ -198,27 +188,26 @@ test("Adding user -- failure path with invalid job length", async () => {
 // WARNING: If connected to a real db, this will add a document to it.
 test("Adding user -- successful path", async () => {
   const addedUser = {
-    _id : "some id...",
+    _id: "some id...",
     name: "Harry Potter",
-    job: "Young wizard"
+    job: "Young wizard",
   };
   const toBeAdded = {
     name: "Harry Potter",
-    job: "Young wizard"
+    job: "Young wizard",
   };
   //Using mockingoose
-  mockingoose(userModel).toReturn(addedUser, 'save');
+  mockingoose(userModel).toReturn(addedUser, "save");
 
   const response = await supertest(appModule.app)
     .post("/users")
     .send(toBeAdded)
     .set("Accept", "application/json")
     .expect("Content-type", /json/)
-    .expect(201)
+    .expect(201);
 
   expect(response.body).toBeTruthy();
   expect(response.body.name).toBe(toBeAdded.name);
   expect(response.body.job).toBe(toBeAdded.job);
   expect(response.body).toHaveProperty("_id");
-
 });

@@ -23,6 +23,6 @@
     "@cucumber/cucumber": "^8.2.1",
     "nodemon": "^2.0.12",
     "prettier": "2.4.1",
-    "supertest": "^6.2.2"
+    "supertest": "^6.3.4"
   }
 }

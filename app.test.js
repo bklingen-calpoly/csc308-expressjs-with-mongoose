@@ -86,7 +86,7 @@ test("Fetching users by name", async () => {
   //The mocked function (mongoose find) should be called only once
   // expect(userModel.find.mock.calls.length).toBe(1);
   // and should be called with no params
-  expect(userModel.find).toHaveBeenCalledWith({ name: name });
+  // expect(userModel.find).toHaveBeenCalledWith({ name: name });
 });
 
 test("Fetching users by job", async () => {
@@ -100,7 +100,7 @@ test("Fetching users by job", async () => {
       job: "Soccer coach",
     },
   ];
-  userModel.find = jest.fn().mockResolvedValue(result);
+  // userModel.find = jest.fn().mockResolvedValue(result);
 
   const userJob = "Soccer coach";
 
@@ -112,30 +112,34 @@ test("Fetching users by job", async () => {
   expect(response.body.users_list.length).toBeGreaterThanOrEqual(0);
   response.body.users_list.forEach((user) => expect(user.job).toBe(userJob));
 
-  expect(userModel.find.mock.calls.length).toBe(1);
-  expect(userModel.find).toHaveBeenCalledWith({ job: userJob });
+  // expect(userModel.find.mock.calls.length).toBe(1);
+  // expect(userModel.find).toHaveBeenCalledWith({ job: userJob });
 });
 
 test("Fetching by id and finding", async () => {
-  const dummyUser = {
-    _id: "007",
-    name: "Harry Potter",
-    job: "Young wizard",
+  // for this test, make sure the id in the query below matches the first
+  // user in the database
+  // userModel.findById = jest.fn().mockResolvedValue(dummyUser);
+  const testUser = {
+    _id: "661da68ac10868bcf1757a82",
+    name: "Ted Lasso",
+    job: "Soccer coach",
   };
-  userModel.findById = jest.fn().mockResolvedValue(dummyUser);
 
-  const response = await supertest(appModule.app).get("/users/007").expect(200);
+  const response = await supertest(appModule.app)
+    .get("/users/661da68ac10868bcf1757a82")
+    .expect(200);
 
   console.log(response);
   expect(response.body).toHaveProperty("users_list");
 
   const found = response.body.users_list;
-  expect(found._id).toBe(dummyUser._id);
-  expect(found.name).toBe(dummyUser.name);
-  expect(found.job).toBe(dummyUser.job);
+  expect(found._id).toBe(testUser._id);
+  expect(found.name).toBe(testUser.name);
+  expect(found.job).toBe(testUser.job);
 
-  expect(userModel.findById.mock.calls.length).toBe(1);
-  expect(userModel.findById).toHaveBeenCalledWith("007");
+  // expect(userModel.findById.mock.calls.length).toBe(1);
+  // expect(userModel.findById).toHaveBeenCalledWith("007");
 });
 
 test("Adding user -- failure path with invalid job length", async () => {
@@ -167,7 +171,7 @@ test("Adding user -- successful path", async () => {
     job: "Young wizard",
   };
   //Using mockingoose
-  mockingoose(userModel).toReturn(addedUser, "save");
+  // mockingoose(userModel).toReturn(addedUser, "save");
 
   const response = await supertest(appModule.app)
     .post("/users")

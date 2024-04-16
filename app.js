@@ -20,7 +20,7 @@ function setDatabaseConn(conn) {
 //   // await mongoose.connect(process.env.MONGODB_URI, {
 //   //   useNewUrlParser: true,
 //   //   useUnifiedTopology: true,
-//   // });  
+//   // });
 //   // userServices.setDataBase(mongoose);
 // }
 
@@ -57,4 +57,10 @@ app.post("/users", async (req, res) => {
   else res.status(400).end();
 });
 
-module.exports = { app, setDatabaseConn } ;
+app.delete("/users/:id", async (req, res) => {
+  const id = req.params["id"];
+  if (userServices.deleteUser(id)) res.status(204).end();
+  else res.status(404).send("Resource not found.");
+});
+
+module.exports = { app, setDatabaseConn };

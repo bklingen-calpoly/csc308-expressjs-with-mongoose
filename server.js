@@ -10,5 +10,5 @@ database
   .catch((error) => console.log(error));
 
 appModule.app.listen(process.env.PORT || port, () => {
-  console.log("REST API is listening.");
+  console.log("REST API is listening");
 });

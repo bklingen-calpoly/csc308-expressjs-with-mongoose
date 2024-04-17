@@ -17,7 +17,9 @@
     "jest": "^27.5.1",
     "mockingoose": "^2.16.2",
     "mongodb-memory-server": "^8.3.0",
-    "mongoose": "^6.0.3"
+    "mongoose": "^6.0.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^8.2.1",

@@ -1,6 +1,6 @@
 const database = require("./database");
 const appModule = require("./app.js");
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 // appModule.app.connectDB();
 
@@ -9,6 +9,6 @@ database
   .then((conn) => appModule.setDatabaseConn(conn))
   .catch((error) => console.log(error));
 
-appModule.app.listen(process.env.PORT || port, () => {
-  console.log("REST API is listening");
+appModule.app.listen(port, () => {
+  console.log(`REST API is listening on port: ${port}`);
 });

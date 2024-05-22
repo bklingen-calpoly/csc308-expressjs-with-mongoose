@@ -32,4 +32,4 @@ jobs:
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "csc307-api"
-          heroku_email: "bcdasilv@calpoly.edu"
+          heroku_email: "bklingen@calpoly.edu"

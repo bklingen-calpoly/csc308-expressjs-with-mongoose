@@ -5,6 +5,7 @@
   "main": "backend_with_db.js",
   "scripts": {
     "test": "jest",
+    "cuc-test": "CUCUMBER_PUBLISH_TOKEN=cba52ac1-3a73-4ba8-8554-9f5bf38b7e3d ./node_modules/.bin/cucumber-js --publish",
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
